@@ -1,0 +1,107 @@
+---
+title: "Higher Education"
+author: "Kevin Otieno"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Higher Education
+
+The data is from Kaggle repository, focus is to learn the higher education system in Pakistan, in terms of the number of university, distribution per province and classification the universities
+
+```{r cars}
+data <- read.csv('University_data.csv')
+
+
+#Summary of the data
+summary(data)
+
+#University data
+
+length(unique(data$University))
+#Total number of universities 227
+length(unique(data$Location))
+#Locations where we have the universities
+
+length(unique(data$Province))
+#Province where we have the universities
+length(unique(data$Campuses))
+#Campuses accross
+length(unique(data$Specialization))
+#Areas of specialization
+length(unique(data$Type))
+#The university classification
+#Establishment per year
+
+yearly <- aggregate(Type ~ Established, data = data, FUN = length)
+
+#Significant years
+head(yearly[order(-yearly$Type),],10)
+```
+### Province visualization
+The viz helps in learning on the distribution of the universities per province
+
+* Punjab has more universities 
+
+* Gilgit-Baltistan has the least number of universities
+
+```{r}
+
+library(ggplot2)
+province <- aggregate(Type ~ Province, data = data, FUN = length)
+head(province)
+
+prov <- ggplot(province, aes(x = Province, y = Type, fill=Type))
+prov + geom_bar(stat = 'identity', width = 0.4) +
+  labs(title = "Number of Universities per Province",
+       y ='Count of University') +
+  theme(plot.title = element_text(size = 12,face = 'bold',hjust=0.5),
+         axis.text.x = element_text(vjust = 0.6,size = 10, angle = 90),
+        axis.title.x = element_text(vjust = -1))
+
+```
+
+### Specialization visualization
+
+The viz helps in learning on the distribution of the universities per province
+
+* General course is offered across most the university
+
+* Agriculture & Veterinary, Art & design and Sufism has is prominent in the universities
+
+```{r}
+specialization <- aggregate(Type ~ Specialization, data = data, FUN = length)
+
+spec <- ggplot(specialization, aes(x = Specialization, y = Type, fill = Type))
+spec + geom_bar(stat='identity', width = 0.5) +
+  labs(title = "Course Specialization",
+       y ='Count of University') +
+  theme(plot.title = element_text(size = 12,
+                                  face = 'bold',
+                                  hjust = 0.5),
+        axis.text.x = element_text(vjust = 0.6,size = 10, angle = 90),
+        axis.title.x = element_text(vjust = -1))
+```
+
+### Classification of the universities
+
+* Most of the universities are public
+
+* Military universities also feature
+
+```{r}
+type <- aggregate(Specialization ~ Type, data = data, FUN = length)
+type
+
+t <- ggplot(type, aes(x= Type, y = Specialization, fill= Specialization))
+t + geom_bar(stat = 'identity', width = 0.5) +
+  labs(title = 'University Classification',
+       y = 'Count of specialization') +
+  theme(plot.title = element_text(size = 12,
+                                  face = 'bold',
+                                  hjust = 0.5),
+        axis.text.x = element_text(vjust = 0.6,size = 10))
+```
+
+
+
